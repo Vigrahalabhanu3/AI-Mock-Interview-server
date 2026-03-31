@@ -30,6 +30,7 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:5175',
+  'https://aimockinterview.banuvigrahala.workers.dev',
 ].filter(Boolean);
 
 app.use(cors({
