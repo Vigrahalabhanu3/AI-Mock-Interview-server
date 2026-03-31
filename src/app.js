@@ -41,6 +41,7 @@ app.use(express.json({ limit: '10mb' }));
 // /api/interview → interview routes (start, answer, feedback)
 // /api/resume    → resume upload and parsing routes
 // /api/history   → interview history routes
+app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server is running' }));
 app.use('/api', routes);
 
 // ============================================
