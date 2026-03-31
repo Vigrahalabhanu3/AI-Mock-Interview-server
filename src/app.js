@@ -25,8 +25,25 @@ const app = express();
 // ============================================
 
 // 1. CORS: Allow our frontend (React) to talk to this backend
-//    Without this, browsers will block requests from localhost:5173 → localhost:5000
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+//    We allow the CLIENT_URL env var, or common local dev ports
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:5175',
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // 2. Body Parser: Convert incoming JSON requests to JavaScript objects
 //    10mb limit to handle large resume text and interview data
