@@ -33,7 +33,7 @@ export const getResume = async (req, res, next) => {
         const resume = await resumeService.getUserResume(req.user._id);
 
         if (!resume) {
-            return res.status(404).json({ success: false, message: 'No resume found. Please upload one.' });
+            return res.status(200).json({ success: true, data: null, message: 'No resume found. Please upload one.' });
         }
 
         return res.json({

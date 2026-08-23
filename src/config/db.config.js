@@ -9,22 +9,23 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    // Get the connection string from environment variables
-    const mongoURI = process.env.MONGODB_URI;
-
-    // Safety check: make sure the URI exists
-    if (!mongoURI) {
-      throw new Error('MONGODB_URI is not defined in your .env file');
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ai-mock-interview';
+    let conn;
+    try {
+      conn = await mongoose.connect(mongoURI);
+    } catch (err) {
+      const localURI = 'mongodb://127.0.0.1:27017/ai-mock-interview';
+      if (mongoURI !== localURI) {
+        console.error(`Primary MongoDB Connection failed (${err.message}). Connecting to local MongoDB...`);
+        conn = await mongoose.connect(localURI);
+      } else {
+        throw err;
+      }
     }
-
-    // Connect to MongoDB
-    // Mongoose 9.x handles connection options automatically
-    const conn = await mongoose.connect(mongoURI);
-
     console.error(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`MongoDB Connection Error: ${error.message}`);
-    process.exit(1); // Stop the server if DB connection fails
+    process.exit(1);
   }
 };
 
