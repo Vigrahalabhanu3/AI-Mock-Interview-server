@@ -67,9 +67,13 @@ app.use(express.json({ limit: '10mb' }));
 // ROUTES
 // ============================================
 
-// Mount all API routes under /api
+// Mount health check endpoints
+app.get('/health', (req, res) => res.json({ status: 'OK', message: 'Server is running' }));
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server is running' }));
+
+// Mount API routes on both / and /api paths for Vercel/Express dual routing
 app.use('/api', routes);
+app.use('/', routes);
 
 // Serve static frontend files in production if client/dist exists
 if (process.env.NODE_ENV === 'production') {
