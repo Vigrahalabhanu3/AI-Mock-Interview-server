@@ -7,37 +7,25 @@
 //   3. Starts the Express server
 // ============================================
 
-// Load environment variables FIRST (before anything else uses them)
+// Load environment variables FIRST
 import "dotenv/config";
 
-// Import our configured Express app
+// Import configured Express app and DB connection
 import app from "./src/app.js";
-
-// Import the database connection function
 import connectDB from "./src/config/db.config.js";
 
-// Get the port from .env or use 5000 as default
-const PORT = process.env.PORT || 5000;
+// Initiate MongoDB connection for serverless/traditional runtime
+connectDB().catch((err) => console.error("MongoDB connection error:", err.message));
 
-// ---- Start the Server ----
+const PORT = process.env.PORT || 5005;
 
-const startServer = async () => {
-  try {
-    // Step 1: Connect to MongoDB (wait until connected)
-    await connectDB();
+// Only start HTTP listener if not running in Vercel Serverless environment
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.error(`\n Server is running on port ${PORT}`);
+    console.error(` Environment: ${process.env.NODE_ENV || "development"}`);
+    console.error(` URL: http://localhost:${PORT}\n`);
+  });
+}
 
-    // Step 2: Start listening for HTTP requests
-    app.listen(PORT, () => {
-      console.error(`\n Server is running on port ${PORT}`);
-      console.error(` Environment: ${process.env.NODE_ENV || "development"}`);
-      console.error(` URL: http://localhost:${PORT}\n`);
-    });
-  } catch (error) {
-    // If anything fails, log the error and exit
-    console.error("Failed to start server:", error.message);
-    process.exit(1);
-  }
-};
-
-// Call the function to start everything
-startServer();
+export default app;
