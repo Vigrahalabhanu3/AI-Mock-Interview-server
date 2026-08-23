@@ -67,9 +67,23 @@ app.use(express.json({ limit: '10mb' }));
 // ROUTES
 // ============================================
 
-// Mount health check endpoints
-app.get('/health', (req, res) => res.json({ status: 'OK', message: 'Server is running' }));
-app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server is running' }));
+// Mount root API welcome and health check endpoints
+app.get(['/', '/api'], (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'AI Mock Interview API is live 24/7 on Vercel!',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth/login',
+      interview: '/api/interview/start',
+      history: '/api/history',
+    },
+  });
+});
+
+app.get(['/health', '/api/health'], (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
 
 // Mount API routes on both / and /api paths for Vercel/Express dual routing
 app.use('/api', routes);
