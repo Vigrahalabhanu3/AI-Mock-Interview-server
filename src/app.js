@@ -75,14 +75,18 @@ app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server i
 app.use('/api', routes);
 app.use('/', routes);
 
-// Serve static frontend files in production if client/dist exists
+import fs from 'fs';
+
+// Serve static frontend files in production ONLY if client/dist exists on disk
 if (process.env.NODE_ENV === 'production') {
   const clientBuildPath = path.join(__dirname, '../../client/dist');
-  app.use(express.static(clientBuildPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
+  if (fs.existsSync(clientBuildPath)) {
+    app.use(express.static(clientBuildPath));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api') || req.path.startsWith('/health')) return next();
+      res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
+  }
 }
 
 // ============================================
