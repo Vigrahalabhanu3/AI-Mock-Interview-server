@@ -18,8 +18,34 @@ const interviewSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['in_progress', 'completed'],
+            enum: ['scheduled', 'in_progress', 'completed', 'cancelled'],
             default: 'in_progress',
+            index: true,
+        },
+        scheduledAt: {
+            type: Date,
+            default: null,
+            index: true,
+        },
+        previousScheduledAt: {
+            type: Date,
+            default: null,
+        },
+        timezone: {
+            type: String,
+            default: 'Asia/Kolkata',
+        },
+        interviewType: {
+            type: String,
+            default: 'Technical & Behavioral Voice',
+        },
+        duration: {
+            type: Number,
+            default: 30, // in minutes
+        },
+        cancellationReason: {
+            type: String,
+            default: '',
         },
         totalQuestions: {
             type: Number,
@@ -53,11 +79,24 @@ const interviewSchema = new mongoose.Schema(
             type: Number,
             default: null,
         },
+        emailStatus: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {
+                scheduled: false,
+                reminder24h: false,
+                reminder1h: false,
+                completed: false,
+                report: false,
+            },
+        },
     },
     {
         timestamps: true,
     }
 );
+
+// Indexes
+interviewSchema.index({ status: 1, scheduledAt: 1 });
 
 const Interview = mongoose.model('Interview', interviewSchema);
 

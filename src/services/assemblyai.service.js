@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 
 const client = new AssemblyAI({
-    apiKey: process.env.ASSEMBLYAI_API_KEY,
+    apiKey: process.env.ASSEMBLYAI_API_KEY || process.env.ASSEMBLY_AI_API_KEY,
 });
 
 export const transcribeAudio = async (audioBuffer, originalName) => {

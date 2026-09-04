@@ -153,3 +153,62 @@ export const speakText = async (req, res, next) => {
         next(error);
     }
 };
+
+export const scheduleInterview = async (req, res, next) => {
+    try {
+        const { role, resumeText, scheduledAt, timezone, interviewType, duration } = req.body;
+        const interview = await interviewService.scheduleInterview(req.user._id, {
+            role,
+            resumeText,
+            scheduledAt,
+            timezone,
+            interviewType,
+            duration,
+        });
+
+        return res.status(201).json({ success: true, data: interview });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const rescheduleInterview = async (req, res, next) => {
+    try {
+        const { newScheduledAt, timezone } = req.body;
+        const interview = await interviewService.rescheduleInterview(req.params.id, req.user._id, {
+            newScheduledAt,
+            timezone,
+        });
+
+        return res.json({ success: true, data: interview });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const cancelInterview = async (req, res, next) => {
+    try {
+        const { cancellationReason } = req.body;
+        const interview = await interviewService.cancelInterview(req.params.id, req.user._id, {
+            cancellationReason,
+        });
+
+        return res.json({ success: true, data: interview });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getEmailLogs = async (req, res, next) => {
+    try {
+        const EmailNotification = (await import('../models/EmailNotification.model.js')).default;
+        const logs = await EmailNotification.find({
+            interviewId: req.params.id,
+            candidateId: req.user._id,
+        }).sort({ createdAt: -1 });
+
+        return res.json({ success: true, data: logs });
+    } catch (error) {
+        next(error);
+    }
+};

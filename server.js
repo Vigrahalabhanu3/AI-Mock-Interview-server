@@ -13,9 +13,15 @@ import "dotenv/config";
 // Import configured Express app and DB connection
 import app from "./src/app.js";
 import connectDB from "./src/config/db.config.js";
+import { startEmailReminderScheduler } from "./src/services/email/reminder.scheduler.js";
 
 // Initiate MongoDB connection for serverless/traditional runtime
-connectDB().catch((err) => console.error("MongoDB connection error:", err.message));
+connectDB()
+  .then(() => {
+    // Start automated email reminder scheduler
+    startEmailReminderScheduler();
+  })
+  .catch((err) => console.error("MongoDB connection error:", err.message));
 
 const PORT = process.env.PORT || 5005;
 

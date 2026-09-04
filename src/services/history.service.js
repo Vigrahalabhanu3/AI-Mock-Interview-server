@@ -8,7 +8,7 @@ export const getUserHistory = async (userId, page = 1, limit = 10) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .select('role status overallScore totalQuestions createdAt'),
+            .select('role status overallScore totalQuestions createdAt scheduledAt timezone duration interviewType'),
 
         Interview.countDocuments({ userId }),
     ]);
