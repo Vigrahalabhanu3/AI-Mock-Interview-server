@@ -12,8 +12,12 @@ import {
     EVALUATE_CODE_PROMPT,
     buildConversationHistory,
 } from '../constants/prompts.js';
+import { resolveCandidateName } from '../utils/user.utils.js';
 
 export const startInterview = async (userId, role, resumeText, candidateName, totalQuestions = 5) => {
+    const candidate = await User.findById(userId);
+    const resolvedCandidateName = resolveCandidateName(candidate || { name: candidateName });
+
     const questionsPrompt = GENERATE_QUESTIONS_PROMPT(role, resumeText, totalQuestions);
     const questionsResponse = await askGemini(questionsPrompt);
     const aiQuestions = parseGeminiJSON(questionsResponse);
@@ -35,7 +39,7 @@ export const startInterview = async (userId, role, resumeText, candidateName, to
         status: 'in_progress',
     });
 
-    const greetingPrompt = INTERVIEW_GREETING_PROMPT(role, candidateName);
+    const greetingPrompt = INTERVIEW_GREETING_PROMPT(role, resolvedCandidateName);
     const greeting = await askGemini(greetingPrompt);
 
     interview.messages.push({
@@ -402,7 +406,7 @@ export const getInterviewById = async (interviewId, userId) => {
         // Automatically generate AI questions and greeting if not yet initialized
         if (!interview.questions || interview.questions.length === 0) {
             const candidate = await User.findById(userId);
-            const candidateName = candidate?.name || 'Candidate';
+            const candidateName = resolveCandidateName(candidate);
             const totalQuestions = interview.totalQuestions || 5;
 
             try {

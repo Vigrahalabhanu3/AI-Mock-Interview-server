@@ -65,6 +65,24 @@ export const getMe = async (req, res, next) => {
 };
 
 /**
+ * PUT /api/auth/profile
+ * Update the current logged-in user's profile preferences.
+ */
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { name, targetRole, experienceLevel } = req.body;
+    const user = await authService.updateUserProfile(req.user._id, {
+      name,
+      targetRole,
+      experienceLevel,
+    });
+    return res.json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * POST /api/auth/logout
  * Logout user (frontend deletes the token).
  */

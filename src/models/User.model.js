@@ -43,6 +43,18 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+
+    // Target role preference
+    targetRole: {
+      type: String,
+      default: 'Full Stack Developer',
+    },
+
+    // Experience level
+    experienceLevel: {
+      type: String,
+      default: 'Mid-Senior Level (3-5 yrs)',
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt automatically

@@ -7,6 +7,7 @@ import { renderInterviewReminder24hEmail } from './templates/interviewReminder24
 import { renderInterviewReminder1hEmail } from './templates/interviewReminder1h.template.js';
 import { renderInterviewCompletedEmail } from './templates/interviewCompleted.template.js';
 import { renderInterviewReportEmail } from './templates/interviewReport.template.js';
+import { resolveCandidateName } from '../../utils/user.utils.js';
 
 class EmailService {
   constructor() {
@@ -190,7 +191,7 @@ class EmailService {
       const interviewUrl = `${appUrl}/interview/${interview._id}`;
 
       const { subject, html, text } = renderInterviewScheduledEmail({
-        candidateName: candidate.name || 'Candidate',
+        candidateName: resolveCandidateName(candidate),
         role: interview.role,
         interviewType: interview.interviewType,
         date: dateStr,
@@ -228,7 +229,7 @@ class EmailService {
       const interviewUrl = `${appUrl}/interview/${interview._id}`;
 
       const { subject, html, text } = renderInterviewRescheduledEmail({
-        candidateName: candidate.name || 'Candidate',
+        candidateName: resolveCandidateName(candidate),
         role: interview.role,
         previousDate: prevDate,
         previousTime: prevTime,
@@ -265,7 +266,7 @@ class EmailService {
       const appUrl = this.getAppUrl();
 
       const { subject, html, text } = renderInterviewCancelledEmail({
-        candidateName: candidate.name || 'Candidate',
+        candidateName: resolveCandidateName(candidate),
         role: interview.role,
         originalDate: dateStr,
         originalTime: timeStr,
@@ -303,7 +304,7 @@ class EmailService {
 
       if (type === '24h') {
         ({ subject, html, text } = renderInterviewReminder24hEmail({
-          candidateName: candidate.name || 'Candidate',
+          candidateName: resolveCandidateName(candidate),
           role: interview.role,
           date: dateStr,
           time: timeStr,
@@ -313,7 +314,7 @@ class EmailService {
         }));
       } else {
         ({ subject, html, text } = renderInterviewReminder1hEmail({
-          candidateName: candidate.name || 'Candidate',
+          candidateName: resolveCandidateName(candidate),
           role: interview.role,
           time: timeStr,
           timezone: tzStr,
@@ -347,7 +348,7 @@ class EmailService {
       const actualDuration = interview.duration || 25;
 
       const { subject, html, text } = renderInterviewCompletedEmail({
-        candidateName: candidate.name || 'Candidate',
+        candidateName: resolveCandidateName(candidate),
         role: interview.role,
         actualDuration,
         resultUrl,
@@ -377,7 +378,7 @@ class EmailService {
       const feedback = interview.feedback || {};
 
       const { subject, html, text } = renderInterviewReportEmail({
-        candidateName: candidate.name || 'Candidate',
+        candidateName: resolveCandidateName(candidate),
         role: interview.role,
         overallScore: interview.overallScore || feedback.overallScore || 0,
         categoryScores: feedback.categoryScores || {},
